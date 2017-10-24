@@ -123,6 +123,65 @@ Create log groups in cloudwatch for your app (optional)
 Now you are ready to setup an application and deploy!
 
 ## Examples
+### Use [config](https://github.com/danmasta/config) to set defaults
+```javascript
+// ./config/default.js
+module.exports = {
+    deploy: {
+        application: 'appname',
+        environment: 'envname',
+        ecr_url: '<ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com',
+        eb_bucket: 'elasticbeanstalk-us-west-2-<ACCOUNT_ID>',
+        region: 'us-west-2',
+        output_dir: './dist/deploy',
+        version: null,
+        dockerrun: './Dockerrun.aws.json',
+        interactive: true,
+        regions: [
+            'us-west-2',
+            'us-east-1',
+            'eu-west-1',
+            'ap-northeast-1'
+        ]
+    }
+}
+```
+### Dockerrun Example - Multi-Container
+*Deploy can interpolate values from your dockerrun template, just use handlebar syntax*
+```json
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+  ],
+  "containerDefinitions": [
+    {
+      "name": "{{application}}",
+      "image": "{{image}}",
+      "essential": true,
+      "memory": 512,
+      "mountPoints": [
+        {
+          "sourceVolume": "awseb-logs-{{application}}",
+          "containerPath": "/var/log/app"
+        }
+      ],
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "{{environment}}-app",
+          "awslogs-region": "{{region}}"
+        }
+      }
+    }
+  ]
+}
+```
 
 ## Contact
 If you have any questions feel free to get in touch
