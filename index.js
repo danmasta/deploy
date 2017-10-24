@@ -167,7 +167,7 @@ function ebConfig() {
 
     try {
 
-        let res = yaml.readSync(path.resolve('./.elasticbeanstalk/config.yml.test'));
+        let res = yaml.readSync(path.resolve('./.elasticbeanstalk/config.yml'));
 
         return { application: res.global.application_name, region: res.global.default_region };
 
