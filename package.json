@@ -1,6 +1,6 @@
 {
   "name": "@danmasta/deploy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Daniel Smith <dannmasta@gmail.com>",
   "description": "Deployment tool for aws and docker",
   "keywords": [
