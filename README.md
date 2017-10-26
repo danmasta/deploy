@@ -20,6 +20,7 @@ Run the deploy script
 ```bash
 deploy
 ```
+*For more usage info check out the [examples](#examples)*
 
 ## Options
 Options can be passed via cmd line arguments, as an object if you require the package programatically, or stored with your other configuration if using a [config](https://github.com/danmasta/config) package.
@@ -146,6 +147,21 @@ module.exports = {
     }
 }
 ```
+
+### Multiple Configs / Environments
+Since this package uses the [env](https://github.com/danmasta/env) and [config](https://github.com/danmasta/config) pacakges, you can easily switch config values with cmd args. So if you have a config structure like this:
+```
+./config/default.js
+./config/production.js
+./config/staging.js
+./config/qa1.js
+./config/qa2.js
+```
+You can load deploy values for qa1 environment by just running:
+```bash
+deploy --env production --config qa1
+```
+
 ### Dockerrun Example - Multi-Container
 *Deploy can interpolate values from your dockerrun template, just use handlebar syntax*
 ```json

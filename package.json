@@ -30,7 +30,7 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "@danmasta/config": "^1.0.0",
+    "@danmasta/config": "^1.1.0",
     "@danmasta/env": "^1.1.0",
     "archiver": "^2.1.0",
     "bluebird": "^3.5.1",
