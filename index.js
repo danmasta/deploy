@@ -305,7 +305,7 @@ function getVersions(){
         let choices = [
             {
                 name: latest,
-                value: latest,
+                value: 'latest',
                 short: latest
             },
             {
