@@ -1,12 +1,14 @@
 # Deploy
-Easy deployment to aws using docker and aws cli
+Easy deployment to AWS ECR repositories and Elastic Beanstalk environments using docker and aws cli
 
 Features:
 * Easy to use
-* Deploy to your elastic beanstalk environments
 * Build and tag docker images
-* Push to private ECR registry
+* Push docker images to private ECR registries
+* Deploy applications to elastic beanstalk environments
 * Interactive cmd line utility
+* Non-interactive mode for easy deployments from CI tools
+* Supports deployment to multiple AWS regions
 
 ## About
 We needed a better way to package and deploy apps. This package aims to make deployments to multiple elastic beanstalk apps and environments really simple. It can be used as a non-interactive cmd line utility, required and used programatically, or as an interactive cmd line prompt.
@@ -25,103 +27,29 @@ deploy
 ## Options
 Options can be passed via cmd line arguments, as an object if you require the package programatically, or stored with your other configuration if using a [config](https://github.com/danmasta/config) package.
 
-Name | Type | Desription
------|------|-----------
--a, --application | string | Name of the elastic beanstalk application to deploy to. Default is `null`
--e, --environment | string | Name of the elastic beanstalk environment to deploy to. Default is `null`
--u, --ecr_url | string | EC2 container registry url. Default is `null`
--b, --eb_bucket | string | s3 bucket url for pushing application zip. Default is `null`
--r, --region | string | AWS region. Default is `us-east-1`
--o, --output_dir | string | Location to save application zip before pushing to s3. Default is `./dist/deploy`
--v, --version | string | Version string used to tag docker image. Default is `null`
--d, --dockerrun | stirng | Where is your dockerrun file located. Default is `./Dockerrun.aws.json`
--i, --interactive | boolean | If true will run the interactive cmd prompt. Default is `true`
--s, --silent | boolean | If true will disable log output, default is `false`
---regions | array | Optional list of regions to show in interactive prompt. Default is all aws elastic beanstalk regions
+Name | Alias | Type | Desription
+-----|------ |------|-----------
+name | n | string | Docker image name
+version | v | string | What version to tag the docker image
+ecrUri | u | string | ECR repository uri to push docker image to
+region | r | string\|array | AWS region(s) to deploy to
+eb | | string\|boolean | If true will trigger the elastic beanstalk deploy step
+ebApp | a | string | Elastic Beanstalk application name
+ebEnv | e | string | Elastic Beanstalk environment name
+ebBucket | b | string | AWS s3 bucket name to push application zip to
+dockerrun | d | string | Where is your projects dockerrun file located
+outputDir | o | string | Where to save application zip before uploading
+silent | s | string\|boolean | If false no output will be logged
+interactive | i | string\|boolean | If true will trigger interactive mode
+regionList | | string\|array | List of AWS region(s) to show as selection options in interactive mode
+help | h | boolean | Show help menu in console
 
 *It's really simple to store default deploy opts in config and just run `deploy`*
 
 ## Setup
-Here is some basic instructions to help get you started with docker and aws, these may not be exhaustive, but should be enough to get you headed in the right direction.
-
-### Docker - Mac
-Install [docker for mac](https://docs.docker.com/docker-for-mac/install/) and follow the instructions. I don't currently have any more input on this platform right now.
-
-### Docker - Windows
-#### Install
-Install [docker](https://docs.docker.com/docker-for-windows/install/) native for Windows (v17.06 or later), we will be following a setup example similar to what they have here: https://docs.docker.com/machine/drivers/hyper-v/
-
-#### Hyper-V
-Enable Hyper-V in Bios
-
-Enable Hyper-V in Windows by searching for 'Turn Windows features on and off'
-
-Make sure the [Hyper-V](https://blogs.technet.microsoft.com/canitpro/2015/09/08/step-by-step-enabling-hyper-v-for-use-on-windows-10/) options are enabled
-
-#### Virtual Switch
-You will also need to create a virtual switch to use docker on windows
-
-Search for and open the 'Hyper-V Manager'
-
-Open 'Virtual Switch Manager' in the actions pane on the right side
-
-Make sure External is highlighted, then click 'Create Virtual Switch'
-
-Select your NIC, usually default is fine, and set the name something like 'external-switch' and click OK
-
-#### Docker Machine
-You need to create at least a default docker machine, you can use the following script
-```bash
-docker-machine create -d hyperv --hyperv-virtual-switch 'external-switch' default
-```
-*Note: when interacting with docker-machines with hyperv drivers you will need to use an elevated/admin shell*
-
-### AWS
-#### Install
-First add [python](https://www.python.org/downloads/) to your path, then use `pip` to install [aws cli](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [eb cli](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html)
-```bash
-pip install awscli awsebcli --upgrade --user
-```
-
-#### Configure
-Next you need to [configure](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration) aws cli with your credentials so you can access aws tools
-```bash
-aws configure
-```
-It will look like this
-```bash
-AWS Access Key ID [None]: <KEY>
-AWS Secret Access Key [None]: <SECRET>
-Default region name [None]: us-east-1
-Default output format [None]: json
-```
-*You will be asked for your access key and secret*
-
-Now login to your docker registry by running the `get-login` command
-```bash
-aws ecr get-login --no-include-email --region us-east-1
-```
-
-This will output the docker login command which looks something like this
-```bash
-docker login -u AWS -p <KEY> https://<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
-```
-Copy and paste that command into your shell to complete login.
-
-*Note: the login cmd is run automatically each time you deploy, but it's still good to test it right now to make sure you have everything working*
-
-Create an application in elastic beanstalk
-Then go to IAM and attach the following policies to the `aws-elasticbeanstalk-ec2-role`
-* AmazonEC2ContainerRegistryReadOnly
-* AmazonAPIGatewayPushToCloudWatchLogs
-
-Create an ECR Registry for your app
-
-Create log groups in cloudwatch for your app (optional)
-
-*These do two things: let your eb environments pull from your private ecr registry, gives your ec2 instances the ability to push logs to cloudwatch*
-
-Now you are ready to setup an application and deploy!
+Check out the [wiki](https://github.com/danmasta/deploy/wiki) for some basic instructions to help get you started with docker and aws. These may not be exhaustive, but should be enough to get you headed in the right direction
+* [Windows](https://github.com/danmasta/deploy/wiki/Setup-Windows)
+* [Mac](https://github.com/danmasta/deploy/wiki/Setup-Mac)
 
 ## Examples
 ### Use [config](https://github.com/danmasta/config) to set defaults
@@ -129,27 +57,40 @@ Now you are ready to setup an application and deploy!
 // ./config/default.js
 module.exports = {
     deploy: {
-        application: 'appname',
-        environment: 'envname',
-        ecr_url: '<ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com',
-        eb_bucket: 'elasticbeanstalk-us-west-2-<ACCOUNT_ID>',
-        region: 'us-west-2',
-        output_dir: './dist/deploy',
+        name: 'my-app',
         version: null,
+        region: 'us-east-1',
+        eb: true,
+        ebApp: 'my-app',
+        ebEnv: 'my-app-prod',
+        ecrUri: '<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com',
+        ebBucket: 'elasticbeanstalk-<REGION>-<ACCOUNT_ID>',
         dockerrun: './Dockerrun.aws.json',
+        outputDir: './dist/deploy',
         interactive: true,
-        regions: [
+        regionList: [
             'us-west-2',
             'us-east-1',
             'eu-west-1',
             'ap-northeast-1'
         ]
     }
-}
+};
+```
+```javascript
+// ./config/qa1.js
+module.exports = {
+    deploy: {
+        ebEnv: 'my-app-qa1',
+        regionList: [
+            'us-east-1',
+        ]
+    }
+};
 ```
 
 ### Multiple Configs / Environments
-Since this package uses the [env](https://github.com/danmasta/env) and [config](https://github.com/danmasta/config) pacakges, you can easily switch config values with cmd args. So if you have a config structure like this:
+Since this package uses the [env](https://github.com/danmasta/env) and [config](https://github.com/danmasta/config) pacakges, you can easily switch config values with cmd args. So if you have a config structure like this
 ```
 ./config/default.js
 ./config/production.js
@@ -157,47 +98,43 @@ Since this package uses the [env](https://github.com/danmasta/env) and [config](
 ./config/qa1.js
 ./config/qa2.js
 ```
-You can load deploy values for qa1 environment by just running:
+You can then load deploy values for a specific environment by just running
 ```bash
 deploy --env production --config qa1
 ```
 
-### Dockerrun Example - Multi-Container
-*Deploy can interpolate values from your dockerrun template, just use handlebar syntax*
-```json
-{
-  "AWSEBDockerrunVersion": 2,
-  "volumes": [
-  ],
-  "containerDefinitions": [
-    {
-      "name": "{{application}}",
-      "image": "{{image}}",
-      "essential": true,
-      "memory": 512,
-      "mountPoints": [
-        {
-          "sourceVolume": "awseb-logs-{{application}}",
-          "containerPath": "/var/log/app"
-        }
-      ],
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 8080
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "{{environment}}-app",
-          "awslogs-region": "{{region}}"
-        }
-      }
-    }
-  ]
-}
+### Use non-interactive mode to deploy from your CI tool
 ```
+deploy --eb -i false -v 2.1.5 -n app -a app -e app-prod -u ... -b ... -r us-east-1 -r ap-south-1
+```
+
+### Require the package and run using gulp
+```javascript
+const gulp = require('gulp');
+const deploy = require('@danmasta/deploy');
+const pkg = require('./package');
+
+gulp.task('deploy', gulp.series('tests'), () => {
+
+    return deploy({
+        interactive: false,
+        name: 'app',
+        version: pkg.version,
+        region: ['us-east-1'],
+        eb: true,
+        ebApp: 'app',
+        ebEnv: 'app-prod',
+        ecrUri: '...',
+        ebBucket: '...'
+    });
+
+});
+```
+
+### Dockerrun Examples
+Check out the [wiki](https://github.com/danmasta/deploy/wiki) for some examples on to configure your dockerrun files. I like to use the AWS multi-docker AMI for my environments, and then just configure one or more containers for each app
+* [Single container example](https://github.com/danmasta/deploy/wiki/Dockerrun-Example-Single-Container)
+* [Multi container example with nginx](https://github.com/danmasta/deploy/wiki/Dockerrun-Example-Nginx-Proxy)
 
 ## Contact
 If you have any questions feel free to get in touch
