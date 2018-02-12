@@ -4,10 +4,12 @@
   "author": "Daniel Smith <dannmasta@gmail.com>",
   "description": "Deployment tool for aws and docker",
   "keywords": [
-    "deployment",
+    "deploy",
     "docker",
     "aws",
-    "elastic-beanstalk"
+    "elastic-beanstalk",
+    "ecr",
+    "container"
   ],
   "main": "index.js",
   "bin": {
@@ -26,8 +28,8 @@
     "eslint-plugin-standard": "^3.0.1"
   },
   "engines": {
-    "npm": ">=3.0.0",
-    "node": ">=6.0.0"
+    "npm": ">=3.x",
+    "node": ">=6.x"
   },
   "dependencies": {
     "@danmasta/config": "^1.1.0",
@@ -35,9 +37,11 @@
     "archiver": "^2.1.0",
     "bluebird": "^3.5.1",
     "chalk": "^2.2.0",
+    "command-line-args": "^5.0.1",
+    "command-line-commands": "^2.0.1",
+    "command-line-usage": "^4.1.0",
     "inquirer": "^3.3.0",
     "lodash": "^4.17.4",
-    "minimist": "^1.2.0",
     "node-yaml": "^3.1.1",
     "shelljs": "^0.7.8"
   }
